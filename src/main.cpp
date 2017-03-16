@@ -7,6 +7,7 @@
 #include <fstream>
 #include "getDeltaRTs.h"
 #include "groupSamples.h"
+#include "getAllRTs.h"
 
 int main(){
 	
@@ -21,11 +22,15 @@ int main(){
 	std::ifstream rawVsMzidFile("rawVsMzid.csv");
 	std::string cellValue;
 	for(int i=0; i<828; ++i){
-		std::getline(sampleListFile,cellValue,',');
+		std::getline(rawVsMzidFile,cellValue,',');
 		rawNames.push_back(cellValue);
-		std::getline(sampleListFile,cellValue,'\n');
+		std::getline(rawVsMzidFile,cellValue,'\n');
 		mzidNames.push_back(cellValue);		
 	}
+
+	// Read all retention times into a vector
+	std::vector<std::vector<float> > allRTs; // RTs stored per peptide (not per sample)
+	getAllRTs(allRTs, rawNames);
 
 	// Now for each sample, find the best match sample in the group of repeats based on the R-squared of a linear fit
 	for(int repeatGroup=0, numGroups=sampleListRepeatGroups.size(); repeatGroup<numGroups; ++repeatGroup){
@@ -33,12 +38,11 @@ int main(){
 		for(int i=0; i<4; ++i){
 			for(int j=0; j<4; ++j){
 				if(!(i==j)&&!(i>j)){
-					getDeltaRTs(i,j,sampleListRepeatGroups);
+					getDeltaRTs(i,j,sampleListRepeatGroups, allRTs);
 				}
 			}
 		}
 	}
-
 /*
 	for(int i=0, noGroups=sampleListRepeatGroups.size(); i<noGroups; ++i){
 		for(int j=0; j<4; ++j){
