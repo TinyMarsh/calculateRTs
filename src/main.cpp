@@ -38,7 +38,9 @@ int main(){
 		for(int i=0; i<4; ++i){
 			for(int j=0; j<4; ++j){
 				if(!(i==j)&&!(i>j)){
-					getDeltaRTs(i,j,sampleListRepeatGroups, allRTs);
+					std::vector<std::pair<float, float> > deltaRTs = getDeltaRTs(i,j,sampleListRepeatGroups, allRTs);
+					// Now we have a list of delta RTs, we can do a linear fit on this and get an R-squared value
+					
 				}
 			}
 		}
